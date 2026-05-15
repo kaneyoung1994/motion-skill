@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>中商动效Skill</title>
+    <link rel="stylesheet" href="./guide-click.css">
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --float-dur: 1000ms;
+        --float-y: 20px;
+        --float-rot-a: -1.5deg;
+        --float-rot-b: 8deg;
+        --float-rot-c: -8deg;
+      }
+
+      .t-float {
+        transform-origin: center center;
+        animation:
+          t-float-y var(--float-dur) infinite,
+          t-float-rotate var(--float-dur) infinite;
+        will-change: translate, rotate;
+      }
+
+      @keyframes t-float-y {
+        0% {
+          translate: 0 0;
+          animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+        }
+
+        50% {
+          translate: 0 calc(var(--float-y) * -1);
+          animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+        }
+
+        100% {
+          translate: 0 0;
+        }
+      }
+
+      @keyframes t-float-rotate {
+        0% {
+          rotate: var(--float-rot-a);
+          animation-timing-function: cubic-bezier(0, 0, 0.58, 1);
+        }
+
+        25% {
+          rotate: var(--float-rot-b);
+          animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+        }
+
+        75% {
+          rotate: var(--float-rot-c);
+          animation-timing-function: cubic-bezier(0.42, 0, 1, 1);
+        }
+
+        100% {
+          rotate: var(--float-rot-a);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .t-float {
+          animation: none !important;
+        }
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 50% 80px, rgba(226, 214, 255, 0.58), transparent 180px),
+          #f7f7f6;
+        color: #161616;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      .page {
+        width: min(100%, 760px);
+        min-height: 100vh;
+        margin: 0 auto;
+        padding: 48px 20px;
+      }
+
+      .hero {
+        text-align: center;
+        margin: 0 auto 42px;
+      }
+
+      .brand-mark {
+        width: 46px;
+        height: 46px;
+        display: inline-grid;
+        place-items: center;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 16px 42px rgba(93, 73, 126, 0.15);
+        color: #5f6368;
+        margin-bottom: 22px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 650;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .subtitle {
+        max-width: 520px;
+        margin: 12px auto 0;
+        color: #6d6d6d;
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .transition-card {
+        width: min(100%, 322px);
+        margin: 0 auto;
+        padding: 10px;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 27px;
+        background: rgba(255, 255, 255, 0.68);
+        box-shadow:
+          0 1px 1px rgba(0, 0, 0, 0.03),
+          0 18px 50px rgba(0, 0, 0, 0.06);
+      }
+
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 322px));
+        gap: 22px;
+        justify-content: center;
+      }
+
+      .preview-panel {
+        min-height: 260px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 17px;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(246, 246, 246, 0.92)),
+          #f4f4f3;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      }
+
+      .button-stage {
+        display: grid;
+        gap: 22px;
+        justify-items: center;
+      }
+
+      .float-stage {
+        min-height: 146px;
+        display: grid;
+        place-items: center;
+      }
+
+      .float-prompt {
+        width: min(100%, 166px);
+        padding: 12px;
+        border: 1px solid rgba(0, 0, 0, 0.07);
+        border-radius: 16px;
+        background: #161616;
+        color: #fff;
+        box-shadow:
+          0 18px 42px rgba(0, 0, 0, 0.18),
+          inset 0 1px 0 rgba(255, 255, 255, 0.15);
+      }
+
+      .float-prompt:not(.is-previewing) {
+        animation: none;
+      }
+
+      .float-prompt-label {
+        margin: 0 0 8px;
+        color: rgba(255, 255, 255, 0.58);
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .float-prompt-text {
+        margin: 0;
+        font-size: 13px;
+        font-weight: 620;
+        line-height: 1.35;
+      }
+
+      .avatar-button {
+        width: 134px;
+        aspect-ratio: 1;
+        padding: 0;
+        border: 0;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #d71918;
+        box-shadow:
+          0 20px 48px rgba(0, 0, 0, 0.2),
+          0 1px 0 rgba(255, 255, 255, 0.4) inset;
+        cursor: pointer;
+      }
+
+      .avatar-button:not(.is-previewing) {
+        animation: none;
+      }
+
+      .avatar-button:focus-visible {
+        outline: 3px solid #161616;
+        outline-offset: 6px;
+      }
+
+      .avatar-button img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+      }
+
+      .demo-button {
+        min-width: 84px;
+        height: 38px;
+        padding: 0 18px;
+        border: 0;
+        border-radius: 999px;
+        background: #e8e8e8;
+        color: #202020;
+        font: inherit;
+        font-size: 14px;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .swap-text {
+        display: block;
+        transition:
+          transform 180ms ease,
+          opacity 180ms ease;
+      }
+
+      .swap-text-stop {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      .demo-button.is-playing .swap-text-start {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      .demo-button.is-playing .swap-text-stop {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .card-footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 40px;
+        gap: 14px;
+        align-items: center;
+        padding: 16px 10px 8px;
+      }
+
+      .card-title {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 620;
+        line-height: 1.3;
+      }
+
+      .card-desc {
+        margin: 4px 0 0;
+        color: #8a8a8a;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .copy-button {
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        border: 0;
+        border-radius: 999px;
+        background: #f1f1f1;
+        color: #707070;
+        cursor: pointer;
+        transition:
+          background 160ms ease,
+          color 160ms ease,
+          transform 160ms ease;
+      }
+
+      .copy-button:hover {
+        background: #e9e9e9;
+        color: #202020;
+      }
+
+      .copy-button.is-copied {
+        background: #161616;
+        color: #fff;
+      }
+
+      .copy-button.is-failed {
+        background: #f3dfdf;
+        color: #9b1c1c;
+      }
+
+      .code-strip {
+        display: none;
+      }
+
+      .toast {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        z-index: 10;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(22, 22, 22, 0.92);
+        color: #fff;
+        box-shadow: 0 14px 38px rgba(0, 0, 0, 0.18);
+        font-size: 14px;
+        line-height: 1.3;
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, calc(-50% + 12px));
+        transition:
+          opacity 180ms ease,
+          transform 180ms ease;
+      }
+
+      .toast.is-visible {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+
+      @media (max-width: 480px) {
+        .page {
+          padding-top: 34px;
+        }
+
+        .card-grid {
+          grid-template-columns: minmax(0, 322px);
+        }
+
+        .subtitle {
+          font-size: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h1 id="page-title">中商动效Skill</h1>
+        <p class="subtitle">沉淀中商项目常用交互动效，把按钮反馈、状态切换和操作引导整理成可复用样式，复制后即可接入业务页面。</p>
+      </section>
+
+      <div class="card-grid">
+        <article class="transition-card" aria-label="Guide Click transition demo card">
+          <div class="preview-panel">
+            <div class="button-stage">
+              <button class="avatar-button t-guide-click" type="button" aria-label="Avatar guide click demo">
+                <img src="./assets/avatar.svg" alt="">
+              </button>
+              <button class="demo-button" type="button" aria-pressed="false">
+                <span class="swap-text swap-text-start">Start</span>
+                <span class="swap-text swap-text-stop" aria-hidden="true">Stop</span>
+              </button>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <div>
+              <h2 class="card-title">Guide button click</h2>
+              <p class="card-desc">按钮点击引导动效</p>
+            </div>
+            <button class="copy-button" type="button" aria-label="Copy guide click CSS" data-copy-code="guide-click-css-source">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="9" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </footer>
+        </article>
+
+        <article class="transition-card" aria-label="Floating prompt transition demo card">
+          <div class="preview-panel">
+            <div class="button-stage">
+              <div class="float-stage">
+                <div class="float-prompt t-float" aria-label="Floating prompt demo">
+                  <p class="float-prompt-label">Prompt</p>
+                  <p class="float-prompt-text">轻微上浮和摆动，适合气泡、提示和入口。</p>
+                </div>
+              </div>
+              <button class="demo-button" type="button" aria-pressed="false">
+                <span class="swap-text swap-text-start">Start</span>
+                <span class="swap-text swap-text-stop" aria-hidden="true">Stop</span>
+              </button>
+            </div>
+          </div>
+          <footer class="card-footer">
+            <div>
+              <h2 class="card-title">Floating prompt</h2>
+              <p class="card-desc">悬浮提示动效</p>
+            </div>
+            <button class="copy-button" type="button" aria-label="Copy floating prompt CSS" data-copy-code="float-css-source">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <rect x="9" y="9" width="10" height="10" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M6 15H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </footer>
+        </article>
+      </div>
+
+      <pre class="code-strip"><code>.t-guide-click</code></pre>
+    </main>
+    <div class="toast" role="status" aria-live="polite">已复制</div>
+    <template id="guide-click-css-source">/* Transitions.dev - Guide button click
+
+   Usage:
+     &lt;button class="t-guide-click"&gt;...&lt;/button&gt;
+
+   Put `.t-guide-click` on any button/icon element to create
+   a subtle repeated click/press animation.
+*/
+
+:root {
+  --guide-click-dur: 1150ms;
+  --guide-click-ease: cubic-bezier(0.25, 0, 0.62, 1);
+}
+
+.t-guide-click {
+  animation: t-guide-click var(--guide-click-dur) var(--guide-click-ease) infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+@keyframes t-guide-click {
+  0% {
+    transform: scale(1, 1);
+  }
+
+  13.04% {
+    transform: scale(0.878, 0.877);
+  }
+
+  30.44% {
+    transform: scale(1, 1);
+  }
+
+  43.48% {
+    transform: scale(0.904, 0.904);
+  }
+
+  60.87% {
+    transform: scale(1, 1);
+  }
+
+  72.46% {
+    transform: scale(0.941, 0.937);
+  }
+
+  100% {
+    transform: scale(1, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-guide-click {
+    animation: none !important;
+  }
+}</template>
+    <template id="float-css-source">/* Transitions.dev — Floating prompt */
+
+/*
+  Usage:
+    &lt;div class="t-float"&gt;&hellip;&lt;/div&gt;
+
+  Put `.t-float` on any element that should gently float.
+  The animation follows the Simple Editor reference:
+  vertical position floats over 60f, while rotation uses
+  per-segment easing curves from the keyframe interpolation panel.
+*/
+
+:root {
+  --float-dur: 1000ms;
+  --float-y: 20px;
+  --float-rot-a: -1.5deg;
+  --float-rot-b: 8deg;
+  --float-rot-c: -8deg;
+}
+
+.t-float {
+  transform-origin: center center;
+  animation:
+    t-float-y var(--float-dur) infinite,
+    t-float-rotate var(--float-dur) infinite;
+  will-change: translate, rotate;
+}
+
+@keyframes t-float-y {
+  0% {
+    translate: 0 0;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  50% {
+    translate: 0 calc(var(--float-y) * -1);
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  100% {
+    translate: 0 0;
+  }
+}
+
+@keyframes t-float-rotate {
+  0% {
+    rotate: var(--float-rot-a);
+    animation-timing-function: cubic-bezier(0, 0, 0.58, 1);
+  }
+
+  25% {
+    rotate: var(--float-rot-b);
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1);
+  }
+
+  75% {
+    rotate: var(--float-rot-c);
+    animation-timing-function: cubic-bezier(0.42, 0, 1, 1);
+  }
+
+  100% {
+    rotate: var(--float-rot-a);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .t-float {
+    animation: none !important;
+  }
+}</template>
+    <script>
+      const demoButtons = document.querySelectorAll(".demo-button");
+      const copyButtons = document.querySelectorAll(".copy-button");
+      const toast = document.querySelector(".toast");
+      let toastTimer;
+
+      demoButtons.forEach((demoButton) => {
+        demoButton.addEventListener("click", () => {
+          const card = demoButton.closest(".transition-card");
+          const previewTarget = card.querySelector(".avatar-button, .float-prompt");
+          const startText = demoButton.querySelector(".swap-text-start");
+          const stopText = demoButton.querySelector(".swap-text-stop");
+          const isPlaying = demoButton.classList.toggle("is-playing");
+
+          previewTarget.classList.toggle("is-previewing", isPlaying);
+          demoButton.setAttribute("aria-pressed", String(isPlaying));
+          startText.setAttribute("aria-hidden", String(isPlaying));
+          stopText.setAttribute("aria-hidden", String(!isPlaying));
+        });
+      });
+
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "fixed";
+        textarea.style.top = "0";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        const copied = document.execCommand("copy");
+        textarea.remove();
+
+        if (!copied) {
+          throw new Error("Copy command failed");
+        }
+      }
+
+      async function getCopySource(button) {
+        const copySrc = button.dataset.copySrc;
+        const copyCode = button.dataset.copyCode;
+
+        if (copySrc) {
+          const response = await fetch(copySrc);
+          if (!response.ok) {
+            throw new Error("CSS file request failed");
+          }
+
+          return response.text();
+        }
+
+        if (copyCode) {
+          const template = document.getElementById(copyCode);
+          if (!template) {
+            throw new Error("Copy source was not found");
+          }
+
+          return template.content.textContent.trim();
+        }
+
+        throw new Error("Copy source was not configured");
+      }
+
+      copyButtons.forEach((copyButton) => {
+        copyButton.addEventListener("click", async () => {
+          const originalLabel = copyButton.getAttribute("aria-label");
+
+          try {
+            const css = await getCopySource(copyButton);
+            await copyText(css);
+            copyButton.classList.remove("is-failed");
+            copyButton.classList.add("is-copied");
+            copyButton.setAttribute("aria-label", "CSS copied");
+
+            window.clearTimeout(toastTimer);
+            toast.classList.add("is-visible");
+            toastTimer = window.setTimeout(() => {
+              toast.classList.remove("is-visible");
+            }, 1800);
+          } catch (error) {
+            copyButton.classList.remove("is-copied");
+            copyButton.classList.add("is-failed");
+            copyButton.setAttribute("aria-label", "Copy failed");
+          }
+
+          window.setTimeout(() => {
+            copyButton.classList.remove("is-copied");
+            copyButton.classList.remove("is-failed");
+            copyButton.setAttribute("aria-label", originalLabel);
+          }, 2400);
+        });
+      });
+    </script>
+  </body>
+</html>
