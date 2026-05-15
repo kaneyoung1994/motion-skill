@@ -1,4 +1,4 @@
-# 中商动效Skill
+# 动效Skill
 
 Static demo site for reusable interaction animation snippets.
 
